@@ -10,8 +10,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.RadioButton
 import android.widget.RadioGroup
-import android.widget.SeekBar
 import android.widget.TextView
 import android.widget.Toast
 import android.widget.ToggleButton
@@ -36,10 +36,10 @@ class MainActivity : AppCompatActivity() {
     private val requestPermissionLauncher =
         registerForActivityResult(ActivityResultContracts.RequestPermission()) { isGranted ->
             if (isGranted) {
-                Toast.makeText(this, "Nerv-Benachrichtigungen aktiviert! ✅", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Reminder aktiviert (morgens, mittags, abends)! ✅", Toast.LENGTH_SHORT).show()
                 challengeManager.scheduleNextAlarm()
             } else {
-                Toast.makeText(this, "Ohne Benachrichtigungen kann dich die App offline nicht wecken! ⚠️", Toast.LENGTH_LONG).show()
+                Toast.makeText(this, "Ohne Berechtigung kann dich die App offline nicht erinnern! ⚠️", Toast.LENGTH_LONG).show()
             }
         }
 
@@ -55,7 +55,7 @@ class MainActivity : AppCompatActivity() {
         setupListeners()
         updateUI()
 
-        // Background alarm scheduling
+        // Schedule next smart alarm slot
         challengeManager.scheduleNextAlarm()
     }
 
@@ -121,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
         // Open Plan Dialog
         binding.btnOpenPlanDialog.setOnClickListener { showPlanDialog() }
-        binding.tvPlanOverview.setOnClickListener { showPlanDialog() }
+        binding.cardPlanAction.setOnClickListener { showPlanDialog() }
 
         // Reset Week
         binding.btnResetWeek.setOnClickListener {
@@ -170,8 +170,6 @@ class MainActivity : AppCompatActivity() {
         // Urgency texts & card border
         binding.tvUrgencyHeadline.text = status.urgencyHeadline
         binding.tvDeadlineText.text = status.deadlineText
-        binding.tvStrategyAdvice.text = status.strategyAdvice
-        binding.tvNagQuote.text = "„${status.nagQuote}“"
 
         when (status.urgencyLevel) {
             UrgencyLevel.CRITICAL -> {
@@ -191,7 +189,7 @@ class MainActivity : AppCompatActivity() {
                 binding.tvUrgencyHeadline.setTextColor(Color.parseColor("#34D399"))
             }
             else -> {
-                binding.cardUrgency.strokeColor = Color.parseColor("#EA580C")
+                binding.cardUrgency.strokeColor = Color.parseColor("#1E293B")
                 binding.tvUrgencyHeadline.setTextColor(Color.parseColor("#FB923C"))
             }
         }
@@ -207,20 +205,26 @@ class MainActivity : AppCompatActivity() {
             binding.tvRemainingStatus.setTextColor(ContextCompat.getColor(this, R.color.orange_light))
         }
 
+        // Coach Advice Box
+        val advice = status.coachAdvice
+        binding.tvAdviceHeadline.text = advice.headline
+        binding.tvAdviceDetail.text = advice.detail
+        binding.tvAdviceBadge.text = advice.badge
+        try {
+            binding.tvAdviceBadge.setTextColor(Color.parseColor(advice.badgeColorHex))
+            binding.cardCoachAdvice.strokeColor = Color.parseColor(advice.badgeColorHex)
+        } catch (_: Exception) {}
+
         // Render Day Tabs (Mo - So)
         renderDayTabs()
 
         // Render Stepper for Selected Day
         updateSelectedDaySection()
 
-        // Render Plan Overview
-        val plan = status.planSettings
-        if (plan.mode == PlanMode.FIXED_DAYS) {
-            val daysStr = plan.fixedDays.sorted().joinToString(", ") { ChallengeManager.DAY_NAMES[it] }
-            binding.tvPlanOverview.text = "📅 Feste Tage: $daysStr • ${plan.targetFitness}x Gym + ${plan.targetJoggen}x Joggen"
-        } else {
-            binding.tvPlanOverview.text = "🔄 Sporadisch • ${plan.targetFitness}x Gym + ${plan.targetJoggen}x Joggen"
-        }
+        // Render Plan & Split Details
+        val preset = status.activePreset
+        binding.tvPlanOverview.text = "${preset.badge} ${preset.title}"
+        binding.tvPlanSplitDetails.text = preset.splitDescription
 
         // Render Session History
         renderSessionHistory(weekSessions)
@@ -366,9 +370,7 @@ class MainActivity : AppCompatActivity() {
 
         val rgMode = dialogView.findViewById<RadioGroup>(R.id.rgPlanMode)
         val layoutFixedDays = dialogView.findViewById<LinearLayout>(R.id.layoutFixedDays)
-        val tvFitLabel = dialogView.findViewById<TextView>(R.id.tvPlanFitnessLabel)
-        val tvJogLabel = dialogView.findViewById<TextView>(R.id.tvPlanJoggenLabel)
-        val sbRatio = dialogView.findViewById<SeekBar>(R.id.sbRatio)
+        val rgPresets = dialogView.findViewById<RadioGroup>(R.id.rgPresets)
 
         val dayButtons = listOf(
             dialogView.findViewById<ToggleButton>(R.id.tbMon),
@@ -380,7 +382,7 @@ class MainActivity : AppCompatActivity() {
             dialogView.findViewById<ToggleButton>(R.id.tbSun)
         )
 
-        // Set initial mode
+        // Set mode
         if (currentPlan.mode == PlanMode.FIXED_DAYS) {
             rgMode.check(R.id.rbFixedDays)
             layoutFixedDays.visibility = View.VISIBLE
@@ -398,19 +400,38 @@ class MainActivity : AppCompatActivity() {
             dayButtons[i].isChecked = currentPlan.fixedDays.contains(i)
         }
 
-        // Set combination seekbar
-        sbRatio.progress = currentPlan.targetFitness
-        tvFitLabel.text = "🏋️ ${currentPlan.targetFitness}x Fitness"
-        tvJogLabel.text = "🏃 ${4 - currentPlan.targetFitness}x Joggen"
+        // Populate Presets list
+        var selectedPresetId = currentPlan.presetId
 
-        sbRatio.setOnSeekBarChangeListener(object : SeekBar.OnSeekBarChangeListener {
-            override fun onProgressChanged(seekBar: SeekBar?, progress: Int, fromUser: Boolean) {
-                tvFitLabel.text = "🏋️ ${progress}x Fitness"
-                tvJogLabel.text = "🏃 ${4 - progress}x Joggen"
+        for (preset in ChallengeManager.PRESETS) {
+            val rb = RadioButton(this).apply {
+                id = View.generateViewId()
+                tag = preset.id
+                text = "${preset.title}\n${preset.splitDescription}"
+                textSize = 12f
+                setTextColor(Color.parseColor("#F8FAFC"))
+                buttonTintList = ContextCompat.getColorStateList(this@MainActivity, R.color.orange_primary)
+                setPadding(16, 12, 16, 12)
+                layoutParams = RadioGroup.LayoutParams(
+                    RadioGroup.LayoutParams.MATCH_PARENT,
+                    RadioGroup.LayoutParams.WRAP_CONTENT
+                ).apply {
+                    setMargins(0, 4, 0, 8)
+                }
             }
-            override fun onStartTrackingTouch(seekBar: SeekBar?) {}
-            override fun onStopTrackingTouch(seekBar: SeekBar?) {}
-        })
+
+            if (preset.id == selectedPresetId) {
+                rb.isChecked = true
+            }
+
+            rb.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    selectedPresetId = preset.id
+                }
+            }
+
+            rgPresets.addView(rb)
+        }
 
         val dialog = AlertDialog.Builder(this)
             .setView(dialogView)
@@ -432,19 +453,20 @@ class MainActivity : AppCompatActivity() {
                 if (dayButtons[i].isChecked) selectedDays.add(i)
             }
 
-            val targetFit = sbRatio.progress
-            val targetJog = 4 - targetFit
+            val chosenPreset = ChallengeManager.PRESETS.find { it.id == selectedPresetId }
+                ?: ChallengeManager.PRESETS.first()
 
             challengeManager.savePlanSettings(
                 PlanSettings(
                     mode = selectedMode,
-                    targetFitness = targetFit,
-                    targetJoggen = targetJog,
+                    presetId = chosenPreset.id,
+                    targetFitness = chosenPreset.fitness,
+                    targetJoggen = chosenPreset.joggen,
                     fixedDays = selectedDays
                 )
             )
 
-            Toast.makeText(this, "Trainingsplan gespeichert! ✅", Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, "Split gespeichert: ${chosenPreset.title} ✅", Toast.LENGTH_SHORT).show()
             updateUI()
             dialog.dismiss()
         }

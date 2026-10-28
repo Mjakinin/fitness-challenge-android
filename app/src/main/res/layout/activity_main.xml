@@ -56,13 +56,13 @@
                 style="@style/Widget.Material3.Button.TonalButton"
                 android:layout_width="wrap_content"
                 android:layout_height="36dp"
-                android:text="🎯 Plan"
+                android:text="🎯 Splits"
                 android:textSize="11sp"
                 android:textStyle="bold"
                 android:textColor="@color/orange_light"
                 app:backgroundTint="#22EA580C"
                 app:cornerRadius="10dp"
-                android:layout_marginEnd="6dp" />
+                android:layout_marginEnd="4dp" />
 
             <!-- Reset Button -->
             <com.google.android.material.button.MaterialButton
@@ -75,16 +75,16 @@
                 android:textSize="11sp" />
         </LinearLayout>
 
-        <!-- 1. Hero Card: Status, Score & Deadline -->
+        <!-- 1. Hero Card: Stand & Progress -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardUrgency"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:cardCornerRadius="20dp"
             app:cardBackgroundColor="@color/card_bg"
-            app:strokeColor="@color/orange_primary"
+            app:strokeColor="@color/card_border"
             app:strokeWidth="1.5dp"
-            android:layout_marginBottom="14dp">
+            android:layout_marginBottom="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -92,16 +92,33 @@
                 android:orientation="vertical"
                 android:padding="16dp">
 
-                <!-- Urgency Tag -->
-                <TextView
-                    android:id="@+id/tvUrgencyHeadline"
-                    android:layout_width="wrap_content"
+                <!-- Top Status Badge -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="🚨 WORST-CASE NOTFALL"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/orange_light"
-                    android:layout_marginBottom="8dp" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/tvUrgencyHeadline"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="⚡ 4X WOCHEN-STAND"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/orange_light" />
+
+                    <TextView
+                        android:id="@+id/tvRemainingStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Noch 4 offen"
+                        android:textSize="12sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_white" />
+                </LinearLayout>
 
                 <!-- Big Main Score -->
                 <LinearLayout
@@ -109,14 +126,14 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="bottom"
-                    android:layout_marginBottom="8dp">
+                    android:layout_marginBottom="10dp">
 
                     <TextView
                         android:id="@+id/tvTotalCount"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:text="0"
-                        android:textSize="48sp"
+                        android:textSize="44sp"
                         android:textStyle="bold"
                         android:includeFontPadding="false"
                         android:textColor="@color/text_white" />
@@ -124,28 +141,13 @@
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=" / 4"
-                        android:textSize="24sp"
+                        android:text=" / 4 Einheiten"
+                        android:textSize="18sp"
                         android:textStyle="bold"
                         android:includeFontPadding="false"
                         android:textColor="@color/text_muted"
-                        android:layout_marginStart="2dp"
+                        android:layout_marginStart="4dp"
                         android:layout_marginBottom="6dp" />
-
-                    <View
-                        android:layout_width="0dp"
-                        android:layout_height="0dp"
-                        android:layout_weight="1" />
-
-                    <TextView
-                        android:id="@+id/tvRemainingStatus"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Noch 4 Einheiten offen"
-                        android:textSize="13sp"
-                        android:textStyle="bold"
-                        android:textColor="@color/orange_light"
-                        android:layout_marginBottom="8dp" />
                 </LinearLayout>
 
                 <!-- 4 Visual Unit Segments -->
@@ -153,7 +155,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="8dp"
                     android:orientation="horizontal"
-                    android:layout_marginBottom="12dp">
+                    android:layout_marginBottom="10dp">
 
                     <View
                         android:id="@+id/segUnit1"
@@ -192,36 +194,81 @@
                     android:id="@+id/tvDeadlineText"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Spätestens Samstag musst du starten!"
-                    android:textSize="13sp"
+                    android:text="Spätestens Samstag 2x + Sonntag 2x im Notfall"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_gray" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 2. Coach-Empfehlung: Kurz & was am besten wäre -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardCoachAdvice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="18dp"
+            app:cardBackgroundColor="#111827"
+            app:strokeColor="#F59E0B"
+            app:strokeWidth="1dp"
+            android:layout_marginBottom="12dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="14dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="💡 EMPFEHLUNG FÜR HEUTE"
+                        android:textSize="10sp"
+                        android:textStyle="bold"
+                        android:textColor="#F59E0B" />
+
+                    <TextView
+                        android:id="@+id/tvAdviceBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="OPTIMAL"
+                        android:textSize="9sp"
+                        android:textStyle="bold"
+                        android:textColor="#F59E0B"
+                        android:background="#22F59E0B"
+                        android:paddingStart="6dp"
+                        android:paddingEnd="6dp"
+                        android:paddingTop="2dp"
+                        android:paddingBottom="2dp" />
+                </LinearLayout>
+
+                <TextView
+                    android:id="@+id/tvAdviceHeadline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🏋️ 1x Fitness (Oberkörper)"
+                    android:textSize="14sp"
                     android:textStyle="bold"
                     android:textColor="@color/text_white"
                     android:layout_marginBottom="2dp" />
 
                 <TextView
-                    android:id="@+id/tvStrategyAdvice"
+                    android:id="@+id/tvAdviceDetail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Max. 2 Einheiten pro Tag. Im Notfall Sa 2x + So 2x."
+                    android:text="Damit bleibt dein Wochenende entspannt und frei von Doppelschichten."
                     android:textSize="11sp"
-                    android:textColor="@color/text_gray"
-                    android:layout_marginBottom="10dp" />
-
-                <!-- Coach Quote Pill -->
-                <TextView
-                    android:id="@+id/tvNagQuote"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:background="#162036"
-                    android:padding="10dp"
-                    android:text="„Beweg deinen faulen Hintern, sonst wird das Wochenende die Hölle!“"
-                    android:textSize="12sp"
-                    android:textStyle="italic"
-                    android:textColor="#CBD5E1" />
+                    android:textColor="@color/text_gray" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 2. Wochentage Auswahl-Leiste (Mo - So) -->
+        <!-- 3. Wochentage Auswahl-Leiste (Mo - So) -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -229,7 +276,7 @@
             app:cardBackgroundColor="@color/card_bg"
             app:strokeColor="@color/card_border"
             app:strokeWidth="1dp"
-            android:layout_marginBottom="14dp">
+            android:layout_marginBottom="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -255,7 +302,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 3. Stepper Card for Selected Day -->
+        <!-- 4. Stepper Card for Selected Day -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -263,7 +310,7 @@
             app:cardBackgroundColor="@color/card_bg"
             app:strokeColor="@color/card_border"
             app:strokeWidth="1dp"
-            android:layout_marginBottom="14dp">
+            android:layout_marginBottom="12dp">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -276,7 +323,7 @@
                     android:layout_height="wrap_content"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
-                    android:layout_marginBottom="14dp">
+                    android:layout_marginBottom="12dp">
 
                     <TextView
                         android:id="@+id/tvSelectedDayTitle"
@@ -459,7 +506,7 @@
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 4. Plan Overview Banner -->
+        <!-- 5. Plan Overview Card: Split Details -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -467,36 +514,54 @@
             app:cardBackgroundColor="#0D1322"
             app:strokeColor="#1E293B"
             app:strokeWidth="1dp"
-            android:layout_marginBottom="14dp">
+            android:layout_marginBottom="12dp">
 
             <LinearLayout
+                android:id="@+id/cardPlanAction"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="12dp">
+                android:orientation="vertical"
+                android:padding="14dp"
+                android:clickable="true"
+                android:focusable="true">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="4dp">
+
+                    <TextView
+                        android:id="@+id/tvPlanOverview"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="🔥 Der Athlet (2x Gym + 2x Run)"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Splits ›"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/orange_light" />
+                </LinearLayout>
 
                 <TextView
-                    android:id="@+id/tvPlanOverview"
-                    android:layout_width="0dp"
+                    android:id="@+id/tvPlanSplitDetails"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="🔄 Sporadisch • 2x Gym + 2x Joggen"
-                    android:textSize="12sp"
-                    android:textStyle="bold"
-                    android:textColor="#94A3B8" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Ändern ›"
+                    android:text="Mo: Oberkörper • Mi: Tempo-Lauf • Fr: Unterkörper • So: Ausdauer"
                     android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/orange_light" />
+                    android:textColor="@color/text_gray" />
             </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
-        <!-- 5. Logged Sessions List (Kompakte Historie) -->
+        <!-- 6. Logged Sessions List (Kompakte Historie) -->
         <com.google.android.material.card.MaterialCardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

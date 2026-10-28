@@ -26,9 +26,83 @@ class ChallengeManager(private val context: Context) {
         const val CHANNEL_ID = "fitness_nag_channel_high"
         const val NOTIFICATION_ID = 4040
         const val ALARM_REQUEST_CODE = 999
+
         val DAY_NAMES = listOf("Mo", "Di", "Mi", "Do", "Fr", "Sa", "So")
         val FULL_DAY_NAMES = listOf(
             "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag", "Sonntag"
+        )
+
+        val PRESETS = listOf(
+            TrainingPreset(
+                id = "athlet",
+                title = "Der Athlet (2x Gym + 2x Run)",
+                subtitle = "Optimaler Muskelaufbau & Ausdauer",
+                fitness = 2,
+                joggen = 2,
+                badge = "🔥 50 / 50",
+                splitDescription = "Mo: Oberkörper • Mi: Tempo-Lauf • Fr: Unterkörper • So: Ausdauerlauf",
+                idealDays = "Mo, Mi, Fr, So"
+            ),
+            TrainingPreset(
+                id = "push_pull",
+                title = "Push / Pull + 2x Run",
+                subtitle = "Oberkörper-Split & 2 Laufeinheiten",
+                fitness = 2,
+                joggen = 2,
+                badge = "💪 Push / Pull",
+                splitDescription = "Di: Push (Brust/Schulter/Trizeps) • Do: Pull (Rücken/Bizeps) • Sa: Intervall • So: Run",
+                idealDays = "Di, Do, Sa, So"
+            ),
+            TrainingPreset(
+                id = "weekend_free",
+                title = "Wochenend-Schoner (Mo-Fr)",
+                subtitle = "Unter der Woche ballern, Sa & So frei!",
+                fitness = 2,
+                joggen = 2,
+                badge = "🏖️ Sa/So Frei",
+                splitDescription = "Mo: Gym • Di: Run • Do: Gym • Fr: Run ➔ Wochenende komplett frei!",
+                idealDays = "Mo, Di, Do, Fr"
+            ),
+            TrainingPreset(
+                id = "gym_focus",
+                title = "Gym-Fokus (3x Kraft + 1x Run)",
+                subtitle = "3er Split Hypertrophie + 1x Alibi-Cardio",
+                fitness = 3,
+                joggen = 1,
+                badge = "🏋️ 3x Gym",
+                splitDescription = "Mo: Push • Mi: Pull • Fr: Beine • Sa: 5km Cardio",
+                idealDays = "Mo, Mi, Fr, Sa"
+            ),
+            TrainingPreset(
+                id = "run_focus",
+                title = "Lauf-Fokus (3x Run + 1x Gym)",
+                subtitle = "Ausdauer-Fokus + 1x Kraftschutz",
+                fitness = 1,
+                joggen = 3,
+                badge = "🏃 3x Run",
+                splitDescription = "Di: Easy Run • Do: Intervalle • Sa: Ganzkörper-Kraft • So: Longrun",
+                idealDays = "Di, Do, Sa, So"
+            ),
+            TrainingPreset(
+                id = "all_gym",
+                title = "Pures Eisen (4x Kraft, 0x Run)",
+                subtitle = "Reines Krafttraining / 4er Split",
+                fitness = 4,
+                joggen = 0,
+                badge = "🦾 4x Eisen",
+                splitDescription = "Mo: Oberkörper A • Di: Unterkörper A • Do: Oberkörper B • Fr: Unterkörper B",
+                idealDays = "Mo, Di, Do, Fr"
+            ),
+            TrainingPreset(
+                id = "all_run",
+                title = "Reine Laufwoche (0x Gym, 4x Run)",
+                subtitle = "Nur Asphalt & Waldwege",
+                fitness = 0,
+                joggen = 4,
+                badge = "⚡ 4x Laufen",
+                splitDescription = "Mo: Easy • Mi: Tempo • Fr: Intervalle • So: Distanzlauf",
+                idealDays = "Mo, Mi, Fr, So"
+            )
         )
     }
 
@@ -68,11 +142,10 @@ class ChallengeManager(private val context: Context) {
             arr.put(obj)
         }
         prefs.edit().putString("sessions_json", arr.toString()).apply()
-        // Always sync homescreen widget!
         ChallengeWidgetProvider.updateAllWidgets(context)
+        scheduleNextAlarm()
     }
 
-    // Add session for any specific date
     fun addSession(sport: String, targetDateStr: String? = null): Boolean {
         val dateStr = targetDateStr ?: dateFormat.format(Date())
         val all = getAllSessions().toMutableList()
@@ -93,7 +166,6 @@ class ChallengeManager(private val context: Context) {
         return true
     }
 
-    // Remove the most recent session of that sport on a specific date (or across week)
     fun removeSessionOnDate(sport: String, dateStr: String): Boolean {
         val all = getAllSessions().toMutableList()
         val index = all.indexOfLast { it.sport == sport && it.date == dateStr }
@@ -176,15 +248,17 @@ class ChallengeManager(private val context: Context) {
     fun getPlanSettings(): PlanSettings {
         val modeStr = prefs.getString("plan_mode", PlanMode.SPORADIC.name) ?: PlanMode.SPORADIC.name
         val mode = try { PlanMode.valueOf(modeStr) } catch (e: Exception) { PlanMode.SPORADIC }
+        val presetId = prefs.getString("preset_id", "athlet") ?: "athlet"
         val fit = prefs.getInt("target_fitness", 2)
         val jog = prefs.getInt("target_joggen", 2)
-        val daysStr = prefs.getString("fixed_days", "1,3,5,6") ?: "1,3,5,6" // Di, Do, Sa, So default
+        val daysStr = prefs.getString("fixed_days", "1,3,5,6") ?: "1,3,5,6"
         val fixedDays = daysStr.split(",")
             .mapNotNull { it.trim().toIntOrNull() }
             .toSet()
 
         return PlanSettings(
             mode = mode,
+            presetId = presetId,
             targetFitness = fit,
             targetJoggen = jog,
             fixedDays = fixedDays
@@ -194,12 +268,28 @@ class ChallengeManager(private val context: Context) {
     fun savePlanSettings(settings: PlanSettings) {
         prefs.edit()
             .putString("plan_mode", settings.mode.name)
+            .putString("preset_id", settings.presetId)
             .putInt("target_fitness", settings.targetFitness)
             .putInt("target_joggen", settings.targetJoggen)
             .putString("fixed_days", settings.fixedDays.joinToString(","))
             .apply()
         ChallengeWidgetProvider.updateAllWidgets(context)
         scheduleNextAlarm()
+    }
+
+    fun getActivePreset(): TrainingPreset {
+        val plan = getPlanSettings()
+        return PRESETS.find { it.id == plan.presetId }
+            ?: TrainingPreset(
+                id = "custom",
+                title = "Individueller Split",
+                subtitle = "${plan.targetFitness}x Gym + ${plan.targetJoggen}x Joggen",
+                fitness = plan.targetFitness,
+                joggen = plan.targetJoggen,
+                badge = "⚙️ Custom",
+                splitDescription = "Flexible Verteilung über die Woche",
+                idealDays = "Flexibel"
+            )
     }
 
     fun getWeekStatus(): WeekStatus {
@@ -229,6 +319,7 @@ class ChallengeManager(private val context: Context) {
 
         val isImpossible = remainingCount > maxPossibleRemaining && !isCompleted
         val plan = getPlanSettings()
+        val activePreset = getActivePreset()
         val isTodayPlanned = plan.mode == PlanMode.FIXED_DAYS && plan.fixedDays.contains(todayIdx)
 
         val urgencyLevel: UrgencyLevel
@@ -239,39 +330,38 @@ class ChallengeManager(private val context: Context) {
 
         if (isCompleted) {
             urgencyLevel = UrgencyLevel.COMPLETED
-            urgencyHeadline = "🎉 WOCHENZIEL ERREICHT!"
-            deadlineText = "4 von 4 Einheiten absolviert!"
-            strategyAdvice = "Respekt! Du hast alle Pflicht-Einheiten für diese Woche sicher."
-            nagQuote = "Saubere Arbeit Maschine! Ausruhen bis Montag."
+            urgencyHeadline = "🎉 4/4 ERLEDIGT!"
+            deadlineText = "Wochenziel erreicht!"
+            strategyAdvice = "Starke Woche! Regeneration bis Montag."
+            nagQuote = "Saubere Arbeit Maschine! Beine hochlegen."
         } else if (isImpossible) {
             urgencyLevel = UrgencyLevel.LOST
             urgencyHeadline = "💀 CHALLENGE VERLOREN!"
-            deadlineText = "Noch $remainingCount nötig, aber nur $maxPossibleRemaining Plätze frei!"
-            strategyAdvice = "Max 2 Einheiten pro Tag. Mathematisch nicht mehr schaffbar."
+            deadlineText = "Noch $remainingCount nötig, aber max. $maxPossibleRemaining Plätze frei!"
+            strategyAdvice = "Max 2 Einheiten pro Tag. Rechnerisch nicht mehr schaffbar."
             nagQuote = "Verkackt! Spendier deinen Kumpels schon mal den Kasten!"
         } else if (maxPossibleRemaining == remainingCount) {
             urgencyLevel = UrgencyLevel.CRITICAL
             urgencyHeadline = "🚨 WORST-CASE NOTFALL!"
             if (todayIdx == 5) { // Samstag
-                deadlineText = "Samstag 2x & Sonntag 2x Pflicht!"
-                strategyAdvice = "Heute 2x (z.B. Joggen + Gym) & morgen 2x! Null Toleranz!"
-                nagQuote = "ALARMSTUFE ROT! Heute 2x und morgen 2x, sonst hast du verkackt! Beweg dich!"
+                deadlineText = "Heute 2x & morgen 2x Pflicht!"
+                strategyAdvice = "Heute Run + Gym und morgen nochmal! 0 Spielraum!"
+                nagQuote = "ALARMSTUFE ROT! Heute 2x & morgen 2x, sonst hast du verloren!"
             } else if (todayIdx == 6) { // Sonntag
-                deadlineText = "LETZTER TAG: Heute noch $remainingCount Einheiten nötig!"
-                strategyAdvice = "Heute ist Sonntag! Du MUSST noch ran, sonst scheitert die Woche!"
-                nagQuote = "Sonntagabend: Keine Ausreden mehr. Zieh die Laufschuhe JETZT an!"
+                deadlineText = "LETZTER TAG: Heute noch $remainingCount Einheiten!"
+                strategyAdvice = "Heute ist Sonntag! Zieh jetzt durch!"
+                nagQuote = "Sonntagabend: Keine Ausreden mehr. Zieh die Schuhe an!"
             } else {
-                deadlineText = "Ab jetzt JEDEN Tag das Maximum nötig!"
+                deadlineText = "Ab jetzt jeden Tag Maximum!"
                 strategyAdvice = "Jeder freie Slot muss genutzt werden."
-                nagQuote = "Letzte Chance! Es brennt der Baum!"
+                nagQuote = "Es brennt der Baum! Keine Pausen mehr möglich."
             }
         } else if (plan.mode == PlanMode.FIXED_DAYS && isTodayPlanned && todayCount == 0) {
-            // It's a planned day!
             urgencyLevel = UrgencyLevel.PLAN_DAY
-            urgencyHeadline = "📅 TRAININGSPLAN: HEUTE EINHEIT!"
-            deadlineText = "Heute ist dein festgelegter Trainingstag (${FULL_DAY_NAMES[todayIdx]})."
-            strategyAdvice = "Plan-Ziel: ${plan.targetFitness}x Gym + ${plan.targetJoggen}x Joggen."
-            nagQuote = "Laut deinem Plan musst du heute ran! Keine Faulheit – zieh durch!"
+            urgencyHeadline = "📅 TRAININGS-TAG"
+            deadlineText = "Heute laut Plan: Einheit fällig (${FULL_DAY_NAMES[todayIdx]})."
+            strategyAdvice = "Plan: ${activePreset.title}"
+            nagQuote = "Laut deinem Plan musst du heute ran! Keine Faulheit."
         } else if (maxPossibleRemaining <= remainingCount + 2) {
             urgencyLevel = UrgencyLevel.WARNING
             urgencyHeadline = "⚠️ PUFFER SCHMILZT!"
@@ -279,20 +369,25 @@ class ChallengeManager(private val context: Context) {
             val latestDayIdx = 7 - neededDays
             val latestName = FULL_DAY_NAMES.getOrElse(latestDayIdx) { "Samstag" }
 
-            deadlineText = "Spätestens $latestName musst du starten!"
-            strategyAdvice = "Mach heute mindestens 1x Sport, um am Wochenende nicht 2x ran zu müssen."
-            nagQuote = "Dir fehlen noch $remainingCount Einheiten! Willst du am Wochenende sterben?!"
+            deadlineText = "Spätestens $latestName starten!"
+            strategyAdvice = "Heute mindestens 1x Sport, um Sa/So Doppel-Schicht zu vermeiden."
+            nagQuote = "Dir fehlen noch $remainingCount Einheiten! Lass es nicht schleifen."
         } else {
             urgencyLevel = UrgencyLevel.CHILL
             urgencyHeadline = if (plan.mode == PlanMode.FIXED_DAYS) "📅 PLAN LÄUFT" else "😎 IM PLAN"
             deadlineText = if (plan.mode == PlanMode.FIXED_DAYS) {
-                "Feste Tage geplant: ${plan.fixedDays.sorted().joinToString(", ") { DAY_NAMES[it] }}"
+                "Feste Tage: ${plan.fixedDays.sorted().joinToString(", ") { DAY_NAMES[it] }}"
             } else {
-                "Flexibel: Spätester Start Samstag (dann 2x Sa + 2x So)."
+                "Spätester Notfall-Start: Samstag (dann 2x Sa + 2x So)."
             }
-            strategyAdvice = "Ziel: ${plan.targetFitness}x Fitness + ${plan.targetJoggen}x Joggen."
-            nagQuote = "Alles locker, aber zieh heute durch, damit du am Wochenende frei hast!"
+            strategyAdvice = "Split: ${activePreset.title}"
+            nagQuote = "Alles locker. Zieh heute durch, dann hast du am Wochenende frei!"
         }
+
+        val coachAdvice = generateCoachAdvice(
+            todayIdx, remainingCount, fitnessCount, joggenCount,
+            plan.targetFitness, plan.targetJoggen, todayCount, isCompleted, isImpossible
+        )
 
         return WeekStatus(
             fitnessCount = fitnessCount,
@@ -308,10 +403,90 @@ class ChallengeManager(private val context: Context) {
             nagQuote = nagQuote,
             todayCount = todayCount,
             todayCanAdd = todayCanAdd,
-            planSettings = plan
+            planSettings = plan,
+            coachAdvice = coachAdvice,
+            activePreset = activePreset
         )
     }
 
+    private fun generateCoachAdvice(
+        todayIdx: Int,
+        remaining: Int,
+        fitDone: Int,
+        jogDone: Int,
+        fitTarget: Int,
+        jogTarget: Int,
+        todayCount: Int,
+        isCompleted: Boolean,
+        isImpossible: Boolean
+    ): CoachAdvice {
+        if (isCompleted) {
+            return CoachAdvice(
+                headline = "🎉 Wochenziel 4/4 erreicht!",
+                detail = "Starke Leistung! Du kannst dich bis Montag komplett ausruhen.",
+                badge = "ERLEDIGT",
+                badgeColorHex = "#10B981"
+            )
+        }
+        if (isImpossible) {
+            return CoachAdvice(
+                headline = "💀 Challenge rechnerisch verloren",
+                detail = "Maximal 2 Einheiten pro Tag. Nächste Woche früher anfangen!",
+                badge = "VERLOREN",
+                badgeColorHex = "#EF4444"
+            )
+        }
+        if (todayCount >= 2) {
+            return CoachAdvice(
+                headline = "✅ Tageslimit erreicht (2/2)",
+                detail = "Perfekt gearbeitet! Gönn dir Regeneration. Morgen geht es weiter.",
+                badge = "REGENERATION",
+                badgeColorHex = "#3B82F6"
+            )
+        }
+        if (todayIdx == 5 && remaining == 4) { // Samstag 0 Einheiten
+            return CoachAdvice(
+                headline = "🚨 NOTFALL-PLAN: Heute 2x & morgen 2x!",
+                detail = "Vormittags 🏃 1x Run & abends 🏋️ 1x Gym, sonst verlierst du die Challenge!",
+                badge = "NOTFALL",
+                badgeColorHex = "#EF4444"
+            )
+        }
+        if (todayIdx == 4 && remaining >= 3) { // Freitag
+            return CoachAdvice(
+                headline = "⚠️ Heute 1x Sport empfohlen!",
+                detail = "Wenn du heute skippst, MUSST du Sa & So jeweils doppelt ran (Worst Case).",
+                badge = "DRINGEND",
+                badgeColorHex = "#F97316"
+            )
+        }
+        if (fitDone < fitTarget && jogDone >= jogTarget) {
+            return CoachAdvice(
+                headline = "🏋️ Heute empfohlen: 1x Fitness (Gym)",
+                detail = "Dein Lauf-Konto ist erfüllt ($jogDone/$jogTarget). Heute Krafttraining!",
+                badge = "OPTIMAL",
+                badgeColorHex = "#A855F7"
+            )
+        }
+        if (jogDone < jogTarget && fitDone >= fitTarget) {
+            return CoachAdvice(
+                headline = "🏃 Heute empfohlen: 1x Joggen",
+                detail = "Dein Gym-Konto ist erfüllt ($fitDone/$fitTarget). Heute Laufschuhe an!",
+                badge = "OPTIMAL",
+                badgeColorHex = "#10B981"
+            )
+        }
+        // Balanced
+        val nextSport = if (fitDone <= jogDone) "🏋️ 1x Fitness (Kraft)" else "🏃 1x Joggen (Lauf)"
+        return CoachAdvice(
+            headline = "💡 Heute empfohlen: $nextSport",
+            detail = "Hält deine Balance und sichert dir ein entspanntes Wochenende.",
+            badge = "EMPFEHLUNG",
+            badgeColorHex = "#FB923C"
+        )
+    }
+
+    // Smart Alarm Scheduler: Fixed meaningful times (Morning 07:00, Lunch 12:30, Evening 18:30)
     fun scheduleNextAlarm() {
         val alarmManager = context.getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -323,23 +498,100 @@ class ChallengeManager(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        val triggerTime = System.currentTimeMillis() + (2 * 60 * 60 * 1000L) // 2 hours
+        val status = getWeekStatus()
+        val nextTriggerMillis = calculateNextAlarmTime(status)
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             alarmManager.setExactAndAllowWhileIdle(
                 AlarmManager.RTC_WAKEUP,
-                triggerTime,
+                nextTriggerMillis,
                 pendingIntent
             )
         } else {
             alarmManager.setExact(
                 AlarmManager.RTC_WAKEUP,
-                triggerTime,
+                nextTriggerMillis,
                 pendingIntent
             )
         }
     }
 
+    private fun calculateNextAlarmTime(status: WeekStatus): Long {
+        val now = Calendar.getInstance()
+
+        // 1. If 4/4 completed: completely silent until next Monday morning at 08:00
+        if (status.isCompleted) {
+            val nextMon = Calendar.getInstance()
+            val dayOfWeek = nextMon.get(Calendar.DAY_OF_WEEK)
+            val daysUntilMon = if (dayOfWeek == Calendar.SUNDAY) 1 else (9 - dayOfWeek)
+            nextMon.add(Calendar.DAY_OF_YEAR, daysUntilMon)
+            nextMon.set(Calendar.HOUR_OF_DAY, 8)
+            nextMon.set(Calendar.MINUTE, 0)
+            nextMon.set(Calendar.SECOND, 0)
+            nextMon.set(Calendar.MILLISECOND, 0)
+            return nextMon.timeInMillis
+        }
+
+        // 2. Define notification slots (hours, minutes) based on urgency
+        val slots: List<Pair<Int, Int>> = when (status.urgencyLevel) {
+            UrgencyLevel.CRITICAL -> {
+                // Saturday 0 units or emergency: 07:00, 11:30, 15:30, 18:30, 21:00
+                listOf(
+                    Pair(7, 0),
+                    Pair(11, 30),
+                    Pair(15, 30),
+                    Pair(18, 30),
+                    Pair(21, 0)
+                )
+            }
+            UrgencyLevel.WARNING -> {
+                // Buffer melting: Morning, Lunch, Evening
+                listOf(
+                    Pair(7, 0),
+                    Pair(12, 30),
+                    Pair(18, 30)
+                )
+            }
+            else -> {
+                // Chill / Normal: Morning 07:30 & Evening 18:30
+                listOf(
+                    Pair(7, 30),
+                    Pair(18, 30)
+                )
+            }
+        }
+
+        // If user already logged 2 units today, skip all remaining slots today
+        val skipToday = status.todayCount >= 2
+
+        if (!skipToday) {
+            for (slot in slots) {
+                val candidate = Calendar.getInstance().apply {
+                    set(Calendar.HOUR_OF_DAY, slot.first)
+                    set(Calendar.MINUTE, slot.second)
+                    set(Calendar.SECOND, 0)
+                    set(Calendar.MILLISECOND, 0)
+                }
+                // Minimum 2 minutes in future
+                if (candidate.timeInMillis > now.timeInMillis + 2 * 60 * 1000L) {
+                    return candidate.timeInMillis
+                }
+            }
+        }
+
+        // If all slots today have passed (or today full), take the first slot of tomorrow
+        val tomorrow = Calendar.getInstance().apply {
+            add(Calendar.DAY_OF_YEAR, 1)
+            val firstSlot = slots.first()
+            set(Calendar.HOUR_OF_DAY, firstSlot.first)
+            set(Calendar.MINUTE, firstSlot.second)
+            set(Calendar.SECOND, 0)
+            set(Calendar.MILLISECOND, 0)
+        }
+        return tomorrow.timeInMillis
+    }
+
+    // Short, crisp notification: not overloaded with text, clear status + short recommendation
     fun showNagNotification() {
         val status = getWeekStatus()
         if (status.isCompleted) return
@@ -359,7 +611,7 @@ class ChallengeManager(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Action: +1 Fitness for TODAY
+        // Action: +1 Fitness right from notification bar
         val fitnessIntent = Intent(context, QuickActionReceiver::class.java).apply {
             action = "ACTION_LOG_FITNESS"
         }
@@ -370,7 +622,7 @@ class ChallengeManager(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
-        // Action: +1 Joggen for TODAY
+        // Action: +1 Joggen right from notification bar
         val joggenIntent = Intent(context, QuickActionReceiver::class.java).apply {
             action = "ACTION_LOG_JOGGEN"
         }
@@ -381,19 +633,33 @@ class ChallengeManager(private val context: Context) {
             PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
         )
 
+        // Crisp, short notification copy
+        val title = when (status.urgencyLevel) {
+            UrgencyLevel.CRITICAL -> "🚨 NOTFALL • ${status.totalCount}/4 Einheiten"
+            UrgencyLevel.WARNING -> "⚠️ 4X Stand: ${status.totalCount}/4 geschafft"
+            UrgencyLevel.PLAN_DAY -> "📅 Trainingstag • ${status.totalCount}/4"
+            else -> "⚡ 4X Stand: ${status.totalCount}/4 Einheiten"
+        }
+
+        val shortMessage = if (status.urgencyLevel == UrgencyLevel.CRITICAL && status.totalCount == 0) {
+            "Samstag & 0 Einheiten! Heute Run + Gym nötig, sonst Challenge verloren!"
+        } else {
+            "${status.coachAdvice.headline} • ${status.coachAdvice.detail}"
+        }
+
         val soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
         val vibrationPattern = longArrayOf(0, 300, 150, 300, 150, 600)
 
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(R.mipmap.ic_launcher)
-            .setContentTitle(status.urgencyHeadline)
-            .setContentText("${status.deadlineText} „${status.nagQuote}“")
+            .setContentTitle(title)
+            .setContentText(shortMessage)
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("${status.deadlineText}\n\n„${status.nagQuote}“\n\nStand: ${status.totalCount}/4 (${status.fitnessCount}x Gym, ${status.joggenCount}x Joggen)")
+                    .bigText(shortMessage)
             )
             .setPriority(NotificationCompat.PRIORITY_MAX)
-            .setCategory(NotificationCompat.CATEGORY_ALARM)
+            .setCategory(NotificationCompat.CATEGORY_REMINDER)
             .setVisibility(NotificationCompat.VISIBILITY_PUBLIC)
             .setSound(soundUri)
             .setVibrate(vibrationPattern)
@@ -410,8 +676,8 @@ class ChallengeManager(private val context: Context) {
 
     private fun createNotificationChannel() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-            val name = "4X Challenge Notfall-Alarm"
-            val descriptionText = "Nervt dich offline und weckt dein Handy, solange Einheiten fehlen!"
+            val name = "4X Challenge Reminder"
+            val descriptionText = "Erinnert dich gezielt morgens, mittags & abends."
             val importance = NotificationManager.IMPORTANCE_HIGH
             val channel = NotificationChannel(CHANNEL_ID, name, importance).apply {
                 description = descriptionText

@@ -22,11 +22,30 @@ enum class PlanMode {
     FIXED_DAYS
 }
 
+data class TrainingPreset(
+    val id: String,
+    val title: String,
+    val subtitle: String,
+    val fitness: Int,
+    val joggen: Int,
+    val badge: String,
+    val splitDescription: String,
+    val idealDays: String
+)
+
+data class CoachAdvice(
+    val headline: String,
+    val detail: String,
+    val badge: String,
+    val badgeColorHex: String
+)
+
 data class PlanSettings(
     val mode: PlanMode,
+    val presetId: String,
     val targetFitness: Int,
     val targetJoggen: Int,
-    val fixedDays: Set<Int> // 0 = Mon, 1 = Tue, ..., 6 = Sun
+    val fixedDays: Set<Int> // 0 = Mon, ..., 6 = Sun
 )
 
 data class DaySummary(
@@ -55,5 +74,7 @@ data class WeekStatus(
     val nagQuote: String,
     val todayCount: Int,
     val todayCanAdd: Boolean,
-    val planSettings: PlanSettings
+    val planSettings: PlanSettings,
+    val coachAdvice: CoachAdvice,
+    val activePreset: TrainingPreset
 )
