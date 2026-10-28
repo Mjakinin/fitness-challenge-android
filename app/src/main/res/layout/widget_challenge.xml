@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/widgetContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/bg_widget"
+    android:orientation="horizontal"
+    android:gravity="center_vertical"
+    android:padding="14dp">
+
+    <!-- Left info section -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/tvWidgetHeader"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="4X CHALLENGE"
+            android:textSize="11sp"
+            android:textStyle="bold"
+            android:textColor="#FB923C" />
+
+        <TextView
+            android:id="@+id/tvWidgetScore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="0 / 4"
+            android:textSize="28sp"
+            android:textStyle="bold"
+            android:includeFontPadding="false"
+            android:textColor="#F8FAFC" />
+
+        <TextView
+            android:id="@+id/tvWidgetDeadline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Spätestens Samstag 2x"
+            android:textSize="11sp"
+            android:maxLines="1"
+            android:ellipsize="end"
+            android:textColor="#94A3B8" />
+    </LinearLayout>
+
+    <!-- Right Quick Action Buttons -->
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginStart="8dp">
+
+        <Button
+            android:id="@+id/btnWidgetAddFitness"
+            android:layout_width="64dp"
+            android:layout_height="36dp"
+            android:text="+ 🏋️"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#9333EA"
+            android:layout_marginBottom="4dp" />
+
+        <Button
+            android:id="@+id/btnWidgetAddJoggen"
+            android:layout_width="64dp"
+            android:layout_height="36dp"
+            android:text="+ 🏃"
+            android:textSize="12sp"
+            android:textStyle="bold"
+            android:textColor="#FFFFFF"
+            android:backgroundTint="#10B981" />
+    </LinearLayout>
+</LinearLayout>

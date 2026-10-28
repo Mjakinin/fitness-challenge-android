@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/dayTabRoot"
+    android:layout_width="0dp"
+    android:layout_height="62dp"
+    android:layout_weight="1"
+    android:orientation="vertical"
+    android:gravity="center"
+    android:background="@drawable/bg_day_tab_unselected"
+    android:layout_marginStart="2dp"
+    android:layout_marginEnd="2dp"
+    android:clickable="true"
+    android:focusable="true">
+
+    <TextView
+        android:id="@+id/tvTabDayName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Mo"
+        android:textSize="11sp"
+        android:textStyle="bold"
+        android:textColor="#94A3B8" />
+
+    <TextView
+        android:id="@+id/tvTabDayNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="26"
+        android:textSize="13sp"
+        android:textStyle="bold"
+        android:textColor="#F8FAFC" />
+
+    <!-- Indicator Dot or Count -->
+    <TextView
+        android:id="@+id/tvTabDot"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="•"
+        android:textSize="10sp"
+        android:textColor="#EA580C"
+        android:visibility="invisible" />
+</LinearLayout>

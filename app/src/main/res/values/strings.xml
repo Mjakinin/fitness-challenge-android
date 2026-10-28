@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">4X Challenge</string>
+    <string name="fitness_title">Fitness (Gym)</string>
+    <string name="joggen_title">Joggen (Laufen)</string>
+    <string name="widget_description">Zeigt deinen aktuellen 4X Challenge Status und erlaubt 1-Klick Einträge.</string>
+</resources>

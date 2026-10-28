@@ -1,0 +1,544 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/bg_dark"
+    android:fillViewport="true">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Top Header: Minimal, Crisp & Professional -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="12dp">
+
+            <ImageView
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:src="@mipmap/ic_launcher"
+                android:contentDescription="Icon" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="4X CHALLENGE"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_white" />
+
+                <TextView
+                    android:id="@+id/tvWeekBounds"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Mo – So"
+                    android:textSize="11sp"
+                    android:textColor="@color/text_gray" />
+            </LinearLayout>
+
+            <!-- Plan Settings Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnOpenPlanDialog"
+                style="@style/Widget.Material3.Button.TonalButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="🎯 Plan"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/orange_light"
+                app:backgroundTint="#22EA580C"
+                app:cornerRadius="10dp"
+                android:layout_marginEnd="6dp" />
+
+            <!-- Reset Button -->
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnResetWeek"
+                style="@style/Widget.Material3.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="36dp"
+                android:text="Reset"
+                android:textColor="@color/text_muted"
+                android:textSize="11sp" />
+        </LinearLayout>
+
+        <!-- 1. Hero Card: Status, Score & Deadline -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardUrgency"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:strokeColor="@color/orange_primary"
+            app:strokeWidth="1.5dp"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <!-- Urgency Tag -->
+                <TextView
+                    android:id="@+id/tvUrgencyHeadline"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="🚨 WORST-CASE NOTFALL"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/orange_light"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- Big Main Score -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="bottom"
+                    android:layout_marginBottom="8dp">
+
+                    <TextView
+                        android:id="@+id/tvTotalCount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="48sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/text_white" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text=" / 4"
+                        android:textSize="24sp"
+                        android:textStyle="bold"
+                        android:includeFontPadding="false"
+                        android:textColor="@color/text_muted"
+                        android:layout_marginStart="2dp"
+                        android:layout_marginBottom="6dp" />
+
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <TextView
+                        android:id="@+id/tvRemainingStatus"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Noch 4 Einheiten offen"
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/orange_light"
+                        android:layout_marginBottom="8dp" />
+                </LinearLayout>
+
+                <!-- 4 Visual Unit Segments -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="8dp"
+                    android:orientation="horizontal"
+                    android:layout_marginBottom="12dp">
+
+                    <View
+                        android:id="@+id/segUnit1"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="#1E293B"
+                        android:layout_marginEnd="4dp" />
+
+                    <View
+                        android:id="@+id/segUnit2"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="#1E293B"
+                        android:layout_marginEnd="4dp" />
+
+                    <View
+                        android:id="@+id/segUnit3"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="#1E293B"
+                        android:layout_marginEnd="4dp" />
+
+                    <View
+                        android:id="@+id/segUnit4"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:background="#1E293B" />
+                </LinearLayout>
+
+                <!-- Deadline Notice -->
+                <TextView
+                    android:id="@+id/tvDeadlineText"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Spätestens Samstag musst du starten!"
+                    android:textSize="13sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_white"
+                    android:layout_marginBottom="2dp" />
+
+                <TextView
+                    android:id="@+id/tvStrategyAdvice"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Max. 2 Einheiten pro Tag. Im Notfall Sa 2x + So 2x."
+                    android:textSize="11sp"
+                    android:textColor="@color/text_gray"
+                    android:layout_marginBottom="10dp" />
+
+                <!-- Coach Quote Pill -->
+                <TextView
+                    android:id="@+id/tvNagQuote"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#162036"
+                    android:padding="10dp"
+                    android:text="„Beweg deinen faulen Hintern, sonst wird das Wochenende die Hölle!“"
+                    android:textSize="12sp"
+                    android:textStyle="italic"
+                    android:textColor="#CBD5E1" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 2. Wochentage Auswahl-Leiste (Mo - So) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="18dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="1dp"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="TAG ZUM BEARBEITEN WÄHLEN"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_muted"
+                    android:layout_marginBottom="8dp" />
+
+                <!-- 7 Day Tabs container -->
+                <LinearLayout
+                    android:id="@+id/layoutDayTabs"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 3. Stepper Card for Selected Day -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="1dp"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:layout_marginBottom="14dp">
+
+                    <TextView
+                        android:id="@+id/tvSelectedDayTitle"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:text="Dienstag, 27.10."
+                        android:textSize="13sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/orange_light" />
+
+                    <TextView
+                        android:id="@+id/tvSelectedDayBadge"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="0 / 2 an diesem Tag"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_gray" />
+                </LinearLayout>
+
+                <!-- Row 1: Fitness (Gym) Stepper -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🏋️ Fitness"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Kraft / Gym"
+                            android:textSize="11sp"
+                            android:textColor="@color/text_gray" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnMinusFitness"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        app:cornerRadius="22dp"
+                        app:icon="@drawable/ic_remove"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconTint="#C084FC"
+                        app:strokeColor="#4A2574"
+                        android:contentDescription="Minus Fitness" />
+
+                    <TextView
+                        android:id="@+id/tvFitnessCount"
+                        android:layout_width="42dp"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textColor="#C084FC" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPlusFitness"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        app:cornerRadius="22dp"
+                        app:backgroundTint="@color/purple_primary"
+                        app:icon="@drawable/ic_add"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconTint="@android:color/white"
+                        android:contentDescription="Plus Fitness" />
+                </LinearLayout>
+
+                <!-- Divider -->
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="#1E293B"
+                    android:layout_marginTop="12dp"
+                    android:layout_marginBottom="12dp" />
+
+                <!-- Row 2: Joggen (Lauf) Stepper -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <LinearLayout
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="🏃 Joggen"
+                            android:textSize="15sp"
+                            android:textStyle="bold"
+                            android:textColor="@color/text_white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Laufen / Cardio"
+                            android:textSize="11sp"
+                            android:textColor="@color/text_gray" />
+                    </LinearLayout>
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnMinusJoggen"
+                        style="@style/Widget.Material3.Button.OutlinedButton"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        app:cornerRadius="22dp"
+                        app:icon="@drawable/ic_remove"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconTint="#34D399"
+                        app:strokeColor="#134E4A"
+                        android:contentDescription="Minus Joggen" />
+
+                    <TextView
+                        android:id="@+id/tvJoggenCount"
+                        android:layout_width="42dp"
+                        android:layout_height="wrap_content"
+                        android:text="0"
+                        android:textSize="18sp"
+                        android:textStyle="bold"
+                        android:gravity="center"
+                        android:textColor="#34D399" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnPlusJoggen"
+                        android:layout_width="44dp"
+                        android:layout_height="44dp"
+                        android:insetLeft="0dp"
+                        android:insetTop="0dp"
+                        android:insetRight="0dp"
+                        android:insetBottom="0dp"
+                        android:padding="0dp"
+                        app:cornerRadius="22dp"
+                        app:backgroundTint="@color/emerald_primary"
+                        app:icon="@drawable/ic_add"
+                        app:iconGravity="textStart"
+                        app:iconPadding="0dp"
+                        app:iconTint="@android:color/white"
+                        android:contentDescription="Plus Joggen" />
+                </LinearLayout>
+
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 4. Plan Overview Banner -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="16dp"
+            app:cardBackgroundColor="#0D1322"
+            app:strokeColor="#1E293B"
+            app:strokeWidth="1dp"
+            android:layout_marginBottom="14dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:padding="12dp">
+
+                <TextView
+                    android:id="@+id/tvPlanOverview"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="🔄 Sporadisch • 2x Gym + 2x Joggen"
+                    android:textSize="12sp"
+                    android:textStyle="bold"
+                    android:textColor="#94A3B8" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Ändern ›"
+                    android:textSize="11sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/orange_light" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- 5. Logged Sessions List (Kompakte Historie) -->
+        <com.google.android.material.card.MaterialCardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="20dp"
+            app:cardBackgroundColor="@color/card_bg"
+            app:strokeColor="@color/card_border"
+            app:strokeWidth="1dp"
+            android:layout_marginBottom="8dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:padding="16dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="BUCHUNGS-HISTORIE DIESER WOCHE"
+                    android:textSize="10sp"
+                    android:textStyle="bold"
+                    android:textColor="@color/text_muted"
+                    android:layout_marginBottom="8dp" />
+
+                <LinearLayout
+                    android:id="@+id/layoutSessionList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" />
+
+                <TextView
+                    android:id="@+id/tvEmptyHistory"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Noch keine Einheiten verbucht."
+                    android:textSize="12sp"
+                    android:textColor="@color/text_muted"
+                    android:gravity="center"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp" />
+            </LinearLayout>
+        </com.google.android.material.card.MaterialCardView>
+
+    </LinearLayout>
+</ScrollView>

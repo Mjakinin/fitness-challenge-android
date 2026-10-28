@@ -1,0 +1,220 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#131B2E"
+    android:orientation="vertical"
+    android:padding="20dp">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🎯 Trainingsplan &amp; Modus"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_white"
+        android:layout_marginBottom="4dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Wähle, wie du trainieren und erinnert werden möchtest."
+        android:textSize="12sp"
+        android:textColor="@color/text_gray"
+        android:layout_marginBottom="16dp" />
+
+    <!-- Mode Selector: Radio Group -->
+    <RadioGroup
+        android:id="@+id/rgPlanMode"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp">
+
+        <RadioButton
+            android:id="@+id/rbSporadic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="🔄 Sporadisch / Flexibel\nKeine festen Tage – Reminder nach Puffer &amp; Notfall-Deadline"
+            android:textColor="@color/text_white"
+            android:textSize="13sp"
+            android:buttonTint="@color/orange_primary"
+            android:paddingStart="8dp"
+            android:layout_marginBottom="8dp" />
+
+        <RadioButton
+            android:id="@+id/rbFixedDays"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="📅 Feste Tage planen\nReminder an deinen gewählten Wochentagen"
+            android:textColor="@color/text_white"
+            android:textSize="13sp"
+            android:buttonTint="@color/orange_primary"
+            android:paddingStart="8dp" />
+    </RadioGroup>
+
+    <!-- Fixed Days Selection (Chips / Checkboxes) -->
+    <LinearLayout
+        android:id="@+id/layoutFixedDays"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_marginBottom="16dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="TRAININGSTAGE AUSWÄHLEN:"
+            android:textSize="10sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_muted"
+            android:layout_marginBottom="6dp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ToggleButton
+                android:id="@+id/tbMon"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:textOn="Mo"
+                android:textOff="Mo"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <ToggleButton
+                android:id="@+id/tbTue"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:textOn="Di"
+                android:textOff="Di"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <ToggleButton
+                android:id="@+id/tbWed"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:textOn="Mi"
+                android:textOff="Mi"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <ToggleButton
+                android:id="@+id/tbThu"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:textOn="Do"
+                android:textOff="Do"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <ToggleButton
+                android:id="@+id/tbFri"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:textOn="Fr"
+                android:textOff="Fr"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <ToggleButton
+                android:id="@+id/tbSat"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:textOn="Sa"
+                android:textOff="Sa"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+
+            <ToggleButton
+                android:id="@+id/tbSun"
+                android:layout_width="0dp"
+                android:layout_height="38dp"
+                android:layout_weight="1"
+                android:textOn="So"
+                android:textOff="So"
+                android:textSize="11sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Combination: Fitness vs Joggen -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="KOMBINATION WÄHLEN (SUMME = 4):"
+        android:textSize="10sp"
+        android:textStyle="bold"
+        android:textColor="@color/text_muted"
+        android:layout_marginBottom="8dp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:layout_marginBottom="8dp">
+
+        <TextView
+            android:id="@+id/tvPlanFitnessLabel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="🏋️ 2x Fitness"
+            android:textStyle="bold"
+            android:textColor="#C084FC" />
+
+        <TextView
+            android:id="@+id/tvPlanJoggenLabel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="🏃 2x Joggen"
+            android:textStyle="bold"
+            android:textColor="#34D399" />
+    </LinearLayout>
+
+    <SeekBar
+        android:id="@+id/sbRatio"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="4"
+        android:progress="2"
+        android:progressTint="@color/orange_primary"
+        android:thumbTint="@color/orange_primary"
+        android:layout_marginBottom="20dp" />
+
+    <!-- Action Buttons -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnCancelPlan"
+            style="@style/Widget.Material3.Button.TextButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Abbrechen"
+            android:textColor="@color/text_gray" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnSavePlan"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:text="Speichern"
+            android:textStyle="bold"
+            app:backgroundTint="@color/orange_primary"
+            app:cornerRadius="12dp" />
+    </LinearLayout>
+</LinearLayout>
